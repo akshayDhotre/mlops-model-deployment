@@ -16,10 +16,10 @@ from model import compute_confusion_matrix, compute_slice_metrics
 
 # Add code to load in the data.
 file_dir = os.path.dirname(__file__)
-datapath = pd.read_csv(os.path.join(file_dir, './data/census.csv'))
+datapath = pd.read_csv(os.path.join(file_dir, '../data/census_cleaned.csv'))
 
 # model save path artifacts
-modelpath = './model'
+modelpath = '../model'
 filename = ['rfc_model.pkl', 'encoder.pkl', 'labelizer.pkl']
 
 # Initialize logging
@@ -42,7 +42,7 @@ def remove_if_exists(filename):
         os.remove(filename)
 
 # Optional enhancement, use K-fold cross validation instead of a train-test split.
-train, test = train_test_split(data, test_size=0.20, random_state=10, stratify=data['salary'])
+train, test = train_test_split(datapath, test_size=0.20, random_state=10, stratify=datapath['salary'])
 
 # Define categorical features
 cat_features = [
@@ -66,9 +66,10 @@ X_test, y_test, _, _ = process_data(test, categorical_features=cat_features, lab
 
 # Check if saved model exist and load them
 if os.path.isfile(os.path.join(file_dir, modelpath,filename[0])):
-        model = pickle.load(open(os.path.join(file_dir, modelpath,filename[0]), 'rb'))
-        encoder = pickle.load(open(os.path.join(file_dir, modelpath,filename[1]), 'rb'))
-        lb = pickle.load(open(os.path.join(file_dir, modelpath,filename[2]), 'rb'))
+    rfc_model = pickle.load(open(os.path.join(file_dir, modelpath,filename[0]), 'rb'))
+    encoder = pickle.load(open(os.path.join(file_dir, modelpath,filename[1]), 'rb'))
+    lb = pickle.load(open(os.path.join(file_dir, modelpath,filename[2]), 'rb'))
+    logging.info("Trained models found in model folder!")
 
 # Train and save a model if does not exist
 else:
@@ -98,7 +99,7 @@ cm = compute_confusion_matrix(y_test, preds, labels=list(lb.classes_))
 logging.info(f"Confusion matrix:\n{cm}")
 
 # Compute performance on slices for categorical features
-slice_savepath = "./slice_output.txt"
+slice_savepath = os.path.join(file_dir, '../output/slice_output.txt')
 remove_if_exists(slice_savepath)
 
 # iterate through the categorical features and save results to log and txt file

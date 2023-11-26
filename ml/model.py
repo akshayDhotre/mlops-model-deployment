@@ -1,11 +1,14 @@
-from sklearn.metrics import fbeta_score, precision_score, recall_score
+from sklearn.metrics import fbeta_score, precision_score, recall_score, confusion_matrix
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 import pandas as pd
 import logging
 import multiprocessing
+import os
 
-logging.basicConfig(filename=os.path.join(file_dir, './logs/ml_model.log'),
+file_dir = os.path.dirname(__file__)
+
+logging.basicConfig(filename=os.path.join(file_dir, '../logs/ml_model.log'),
                     level=logging.INFO,
                     filemode='w',
                     format='%(name)s - %(levelname)s - %(message)s')
@@ -30,9 +33,9 @@ def train_model(X_train, y_train):
 
     parameters = {
         'n_estimators': [10, 15, 20],
-        'max_depth': [5, 10],
+        'max_depth': [2, 5, 10],
         'min_samples_split': [20, 50, 100],
-        'learning_rate': [1.0],
+        'max_features': ['auto', 'sqrt'],
     }
 
     n_jobs = multiprocessing.cpu_count() - 1
@@ -41,7 +44,7 @@ def train_model(X_train, y_train):
     rfc_model = GridSearchCV(RandomForestClassifier(random_state=0),
                        param_grid=parameters,
                        cv=3,
-                       n_jobs=njobs,
+                       n_jobs=n_jobs,
                        verbose=2,
                        )
 
