@@ -39,14 +39,15 @@ def train_model(X_train, y_train):
     }
 
     n_jobs = multiprocessing.cpu_count() - 1
-    logging.info(f"Finding optimum values of hyperparameters on {n_jobs} cores.")
+    logging.info(
+        f"Finding optimum values of hyperparameters on {n_jobs} cores.")
 
     rfc_model = GridSearchCV(RandomForestClassifier(random_state=0),
-                       param_grid=parameters,
-                       cv=3,
-                       n_jobs=n_jobs,
-                       verbose=2,
-                       )
+                             param_grid=parameters,
+                             cv=3,
+                             n_jobs=n_jobs,
+                             verbose=2,
+                             )
 
     rfc_model.fit(X_train, y_train)
     logging.info(f"BEST PARAMS: {rfc_model.best_params_}")
@@ -93,6 +94,7 @@ def inference(model, X):
     predictions = model.predict(X)
     return predictions
 
+
 def compute_confusion_matrix(y, preds, labels=None):
     """
     Compute confusion matrix on predictions.
@@ -109,14 +111,15 @@ def compute_confusion_matrix(y, preds, labels=None):
     cm = confusion_matrix(y, preds)
     return cm
 
+
 def compute_slice_metrics(df, feature, y, preds):
     """
     Compute the performance on slices for a given categorical feature
     a slice corresponds to one value option of the categorical feature analyzed
-    
+
     Inputs
     ------
-    df: 
+    df:
         test dataframe pre-processed with features as column used for slices
     feature:
         feature on which to perform the slices
@@ -133,17 +136,23 @@ def compute_slice_metrics(df, feature, y, preds):
         recall : float
         fbeta : float
     row corresponding to each of the unique values taken by the feature (slice)
-    """    
+    """
     slice_options = df[feature].unique().tolist()
-    perf_df = pd.DataFrame(index=slice_options, 
-                            columns=['feature','n_samples','precision', 'recall', 'fbeta'])
+    perf_df = pd.DataFrame(
+        index=slice_options,
+        columns=[
+            'feature',
+            'n_samples',
+            'precision',
+            'recall',
+            'fbeta'])
     for option in slice_options:
-        slice_mask = df[feature]==option
+        slice_mask = df[feature] == option
 
         slice_y = y[slice_mask]
         slice_preds = preds[slice_mask]
         precision, recall, fbeta = compute_model_metrics(slice_y, slice_preds)
-        
+
         perf_df.at[option, 'feature'] = feature
         perf_df.at[option, 'n_samples'] = len(slice_y)
         perf_df.at[option, 'precision'] = precision
@@ -153,7 +162,7 @@ def compute_slice_metrics(df, feature, y, preds):
     # reorder columns in performance dataframe
     perf_df.reset_index(names='feature value', inplace=True)
     colList = list(perf_df.columns)
-    colList[0], colList[1] =  colList[1], colList[0]
+    colList[0], colList[1] = colList[1], colList[0]
     perf_df = perf_df[colList]
 
     return perf_df
