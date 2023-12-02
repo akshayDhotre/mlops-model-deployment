@@ -41,8 +41,11 @@ def remove_if_exists(filename):
     if os.path.exists(filename):
         os.remove(filename)
 
-# Optional enhancement, use K-fold cross validation instead of a train-test split.
-train, test = train_test_split(datapath, test_size=0.20, random_state=10, stratify=datapath['salary'])
+
+# Optional enhancement, use K-fold cross validation instead of a
+# train-test split.
+train, test = train_test_split(
+    datapath, test_size=0.20, random_state=10, stratify=datapath['salary'])
 
 # Define categorical features
 cat_features = [
@@ -62,13 +65,32 @@ X_train, y_train, encoder, lb = process_data(
 
 # Proces the test data with the process_data function.
 # Set train flag to False to use the encoding from the train set
-X_test, y_test, _, _ = process_data(test, categorical_features=cat_features, label='salary', training=False, encoder=encoder, lb=lb)
+X_test, y_test, _, _ = process_data(
+    test, categorical_features=cat_features, label='salary', training=False, encoder=encoder, lb=lb)
 
 # Check if saved model exist and load them
-if os.path.isfile(os.path.join(file_dir, modelpath,filename[0])):
-    rfc_model = pickle.load(open(os.path.join(file_dir, modelpath,filename[0]), 'rb'))
-    encoder = pickle.load(open(os.path.join(file_dir, modelpath,filename[1]), 'rb'))
-    lb = pickle.load(open(os.path.join(file_dir, modelpath,filename[2]), 'rb'))
+if os.path.isfile(os.path.join(file_dir, modelpath, filename[0])):
+    rfc_model = pickle.load(
+        open(
+            os.path.join(
+                file_dir,
+                modelpath,
+                filename[0]),
+            'rb'))
+    encoder = pickle.load(
+        open(
+            os.path.join(
+                file_dir,
+                modelpath,
+                filename[1]),
+            'rb'))
+    lb = pickle.load(
+        open(
+            os.path.join(
+                file_dir,
+                modelpath,
+                filename[2]),
+            'rb'))
     logging.info("Trained models found in model folder!")
 
 # Train and save a model if does not exist
@@ -105,6 +127,6 @@ remove_if_exists(slice_savepath)
 # iterate through the categorical features and save results to log and txt file
 for feature in cat_features:
     performance_df = compute_slice_metrics(test, feature, y_test, preds)
-    performance_df.to_csv(slice_savepath,  mode='a', index=False)
+    performance_df.to_csv(slice_savepath, mode='a', index=False)
     logging.info(f"Performance on slice {feature}")
     logging.info(performance_df)

@@ -1,4 +1,10 @@
-import pytest, os, logging, pickle, sys
+from ml.data import process_data
+from ml.model import inference, compute_model_metrics, compute_confusion_matrix
+import pytest
+import os
+import logging
+import pickle
+import sys
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.exceptions import NotFittedError
@@ -6,14 +12,13 @@ from sklearn.exceptions import NotFittedError
 root_dir = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(root_dir)
 
-from ml.model import inference, compute_model_metrics, compute_confusion_matrix
-from ml.data import process_data
-
 
 """
-Fixture - The test functions will 
+Fixture - The test functions will
 use the return of data() as an argument
 """
+
+
 @pytest.fixture(scope="module")
 def data():
     # code to load in the data.
@@ -31,14 +36,14 @@ def features():
     """
     Fixture - will return the categorical features as argument
     """
-    cat_features = [    "workclass",
-                        "education",
-                        "marital-status",
-                        "occupation",
-                        "relationship",
-                        "race",
-                        "sex",
-                        "native-country"]
+    cat_features = ["workclass",
+                    "education",
+                    "marital-status",
+                    "occupation",
+                    "relationship",
+                    "race",
+                    "sex",
+                    "native-country"]
     return cat_features
 
 
@@ -47,23 +52,25 @@ def train_dataset(data, features):
     """
     Fixture - returns cleaned train dataset to be used for model testing
     """
-    train, test = train_test_split( data, 
-                                test_size=0.20, 
-                                random_state=10, 
-                                stratify=data['salary']
-                                )
+    train, test = train_test_split(data,
+                                   test_size=0.20,
+                                   random_state=10,
+                                   stratify=data['salary']
+                                   )
     X_train, y_train, encoder, lb = process_data(
-                                            train,
-                                            categorical_features=features,
-                                            label="salary",
-                                            training=True
-                                        )
+        train,
+        categorical_features=features,
+        label="salary",
+        training=True
+    )
     return X_train, y_train
 
 
 """
 Test methods
 """
+
+
 def test_import_data(path):
     """
     Test presence and shape of dataset file
@@ -82,7 +89,7 @@ def test_import_data(path):
 
     except AssertionError as err:
         logging.error(
-        "Testing import_data: The file doesn't appear to have rows and columns")
+            "Testing import_data: The file doesn't appear to have rows and columns")
         raise err
 
 
@@ -91,10 +98,11 @@ def test_features(data, features):
     Check that categorical features are in dataset
     """
     try:
-        assert sorted(set(data.columns).intersection(features)) == sorted(features)
+        assert sorted(set(data.columns).intersection(
+            features)) == sorted(features)
     except AssertionError as err:
         logging.error(
-        "Testing dataset: Features are missing in the data columns")
+            "Testing dataset: Features are missing in the data columns")
         raise err
 
 
@@ -108,7 +116,7 @@ def test_is_model():
             _ = pickle.load(open(savepath, 'rb'))
         except Exception as err:
             logging.error(
-            "Testing saved model: Saved model does not appear to be valid")
+                "Testing saved model: Saved model does not appear to be valid")
             raise err
     else:
         pass
@@ -127,7 +135,7 @@ def test_is_fitted_model(train_dataset):
         model.predict(X_train)
     except NotFittedError as err:
         logging.error(
-        f"Model is not fit, error {err}")
+            f"Model is not fit, error {err}")
         raise err
 
 
@@ -145,7 +153,7 @@ def test_inference(train_dataset):
             preds = inference(model, X_train)
         except Exception as err:
             logging.error(
-            "Inference cannot be performed on saved model and train data")
+                "Inference cannot be performed on saved model and train data")
             raise err
     else:
         pass
@@ -166,10 +174,11 @@ def test_compute_model_metrics(train_dataset):
             precision, recall, fbeta = compute_model_metrics(y_train, preds)
         except Exception as err:
             logging.error(
-            "Performance metrics cannot be calculated on train data")
+                "Performance metrics cannot be calculated on train data")
             raise err
     else:
         pass
+
 
 def test_compute_confusion_matrix(train_dataset):
     """
@@ -186,7 +195,7 @@ def test_compute_confusion_matrix(train_dataset):
             cm = compute_confusion_matrix(y_train, preds)
         except Exception as err:
             logging.error(
-            "Confusion matrix cannot be calculated on train data")
+                "Confusion matrix cannot be calculated on train data")
             raise err
     else:
         pass

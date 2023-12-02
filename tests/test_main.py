@@ -1,3 +1,4 @@
+from main import app
 from fastapi.testclient import TestClient
 from fastapi import HTTPException
 import json
@@ -8,7 +9,6 @@ import sys
 root_dir = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(root_dir)
 
-from main import app
 
 client = TestClient(app)
 
@@ -26,25 +26,25 @@ def test_inference():
     """
     Test model inference output
     """
-    sample =  {  'age':50,
-                'workclass':"Private", 
-                'fnlgt':234721,
-                'education':"Doctorate",
-                'education_num':16,
-                'marital_status':"Separated",
-                'occupation':"Exec-managerial",
-                'relationship':"Not-in-family",
-                'race':"Black",
-                'sex':"Female",
-                'capital_gain':0,
-                'capital_loss':0,
-                'hours_per_week':50,
-                'native_country':"United-States"
-            }
+    sample = {'age': 50,
+              'workclass': "Private",
+              'fnlgt': 234721,
+              'education': "Doctorate",
+              'education_num': 16,
+              'marital_status': "Separated",
+              'occupation': "Exec-managerial",
+              'relationship': "Not-in-family",
+              'race': "Black",
+              'sex': "Female",
+              'capital_gain': 0,
+              'capital_loss': 0,
+              'hours_per_week': 50,
+              'native_country': "United-States"
+              }
 
     data = json.dumps(sample)
 
-    r = client.post("/inference/", data=data )
+    r = client.post("/inference/", data=data)
 
     # test response and output
     assert r.status_code == 200
@@ -60,25 +60,25 @@ def test_inference_class0():
     """
     Test model inference output for class 0
     """
-    sample =  {  'age':30,
-                'workclass':"Private", 
-                'fnlgt':234721,
-                'education':"HS-grad",
-                'education_num':1,
-                'marital_status':"Separated",
-                'occupation':"Handlers-cleaners",
-                'relationship':"Not-in-family",
-                'race':"Black",
-                'sex':"Male",
-                'capital_gain':0,
-                'capital_loss':0,
-                'hours_per_week':35,
-                'native_country':"United-States"
-            }
+    sample = {'age': 30,
+              'workclass': "Private",
+              'fnlgt': 234721,
+              'education': "HS-grad",
+              'education_num': 1,
+              'marital_status': "Separated",
+              'occupation': "Handlers-cleaners",
+              'relationship': "Not-in-family",
+              'race': "Black",
+              'sex': "Male",
+              'capital_gain': 0,
+              'capital_loss': 0,
+              'hours_per_week': 35,
+              'native_country': "United-States"
+              }
 
     data = json.dumps(sample)
 
-    r = client.post("/inference/", data=data )
+    r = client.post("/inference/", data=data)
 
     # test response and output
     assert r.status_code == 200
@@ -94,18 +94,19 @@ def test_wrong_inference_query():
     """
     Test incomplete sample does not generate prediction
     """
-    sample =  { 'age':50,
-                'workclass':"Private", 
-                'fnlgt':234721,
-            }
+    sample = {'age': 50,
+              'workclass': "Private",
+              'fnlgt': 234721,
+              }
 
     data = json.dumps(sample)
-    r = client.post("/inference/", data=json.dumps(data) )
+    r = client.post("/inference/", data=json.dumps(data))
 
     assert 'prediction' not in r.json().keys()
-    logging.warning(f"The sample has {len(sample)} features. Must be 14 features")
-        
-    
+    logging.warning(
+        f"The sample has {len(sample)} features. Must be 14 features")
+
+
 if '__name__' == '__main__':
     test_root()
     test_inference()
