@@ -11,7 +11,7 @@ Hyperparameters tuning was realized using GridSearchCV.
 Model is saved as a pickle file in the model folder. All training steps and metrics are logged in the file "logs/ml_model.log".
 
 ## Intended Use
-This model can be used to predict the salary level of an individual based off a handful of attributes. The usage is meant for students, academics or research purpose.
+This model can be used to predict the salary level of an individual based on cnesus data having few attributes. The usage is meant for students, academics or research purpose.
 
 
 ## Training Data
@@ -31,7 +31,12 @@ Transformation was applied on the categorical features and the target label resp
 
 ## Metrics
 The classification performance is evaluated using precision, recall and fbeta metrics.
+ - precision: 0.794
+ - recall: 0.542
+ - fbeta: 0.644
+
 The confusion matrix is also calculated.
+ - [[4320  211][ 688  814]]
 
 
 ## Ethical Considerations
