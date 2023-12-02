@@ -1,5 +1,3 @@
-from ml.data import process_data
-from ml.model import inference, compute_model_metrics, compute_confusion_matrix
 import pytest
 import os
 import logging
@@ -12,6 +10,8 @@ from sklearn.exceptions import NotFittedError
 root_dir = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(root_dir)
 
+from ml.data import process_data
+from ml.model import inference, compute_model_metrics, compute_confusion_matrix
 
 """
 Fixture - The test functions will

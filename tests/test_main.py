@@ -1,4 +1,3 @@
-from main import app
 from fastapi.testclient import TestClient
 from fastapi import HTTPException
 import json
@@ -8,6 +7,8 @@ import sys
 
 root_dir = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(root_dir)
+
+from main import app
 
 
 client = TestClient(app)
@@ -87,7 +88,7 @@ def test_inference_class0():
 
     # test prediction vs expected label
     logging.info(f'********* prediction = {r.json()["prediction"]} ********')
-    assert r.json()["prediction"][0] == '<=50K'
+    assert r.json()["prediction"] == '<=50K'
 
 
 def test_wrong_inference_query():

@@ -56,7 +56,7 @@ def test_predict_negative():
             }
     response = client.post("/inference", data=json.dumps(data))
     assert response.status_code == 200
-    assert response.json()["prediction"] == ['<=50K']
+    assert response.json()["prediction"] == '<=50K'
 
 
 def test_predict_invalid():
